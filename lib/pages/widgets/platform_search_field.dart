@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pragma_prueba/theme/app_colors.dart';
 
 class PlatformSearchField extends StatelessWidget {
   final TextEditingController controller;
@@ -30,17 +31,19 @@ class PlatformSearchField extends StatelessWidget {
       ),
       child: Platform.isIOS
           ? CupertinoTextField(
+            placeholderStyle: TextStyle(color: AppColors.black),
               controller: controller,
               placeholder: hintText,
+            style: TextStyle(color: AppColors.black) ,
               onChanged: onChanged,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: const BoxDecoration(),
               prefix: const Padding(
                 padding: EdgeInsets.only(left: 8),
                 child: Icon(
-                  CupertinoIcons.search,
+                  Icons.search,
                   color: CupertinoColors.systemGrey,
-                  size: 20,
+                  size: 30,
                 ),
               ),
               suffix: controller.text.isNotEmpty
@@ -49,7 +52,7 @@ class PlatformSearchField extends StatelessWidget {
                       child: const Padding(
                         padding: EdgeInsets.only(right: 8),
                         child: Icon(
-                          CupertinoIcons.clear_circled_solid,
+                        Icons.clear,
                           color: CupertinoColors.systemGrey,
                           size: 20,
                         ),

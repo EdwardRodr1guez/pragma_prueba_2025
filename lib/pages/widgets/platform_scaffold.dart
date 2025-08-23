@@ -9,6 +9,7 @@ class PlatformScaffold extends StatelessWidget {
   final Widget body;
   final List<Widget>? actions;
   final Widget? floatingActionButton;
+  final Widget? leading;
 
   const PlatformScaffold({
     super.key,
@@ -16,25 +17,31 @@ class PlatformScaffold extends StatelessWidget {
     required this.body,
     this.actions,
     this.floatingActionButton,
+    this.leading
   });
 
   @override
   Widget build(BuildContext context) {
     if (Platform.isIOS) {
       return CupertinoPageScaffold(
+   
         backgroundColor: AppColors.white,
         navigationBar: CupertinoNavigationBar(
+          //automaticallyImplyLeading: true,
+          leading:  leading ??null , //Icon(Icons.arrow_back_ios),
           backgroundColor: AppColors.white,
+
           // El texto se centra automáticamente con middle
           middle: Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.w600,
+              color: AppColors.black,
               fontSize: 17.0, // Tamaño estándar de iOS
             ),
             textAlign: TextAlign.center, // Asegurar centrado
           ),
-
+  
           trailing: actions != null
               ? Row(
                   mainAxisSize: MainAxisSize.min,

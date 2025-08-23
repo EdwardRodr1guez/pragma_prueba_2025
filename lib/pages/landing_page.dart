@@ -1,3 +1,4 @@
+
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -29,7 +30,6 @@ class _LandingPageState extends State<LandingPage> {
   String? error;
   CatApiService? _catApiService;
 
-  // Controladores para el buscador
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
@@ -39,9 +39,9 @@ class _LandingPageState extends State<LandingPage> {
     FlutterNativeSplash.remove();
     final apiKey = dotenv.env['API_KEY']!;
     _catApiService = CatApiService(apiKey: apiKey);
-    SchedulerBinding.instance.addPostFrameCallback((timeStamp) async {
-      await _loadBreeds();
 
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      await _loadBreeds();
       _searchController.addListener(_onSearchChanged);
     });
   }
@@ -101,7 +101,6 @@ class _LandingPageState extends State<LandingPage> {
         isLoading = false;
       });
 
-      // Mostrar error con componente nativo
       PlatformAlertDialog.show(
         context: context,
         title: 'Error',
@@ -116,80 +115,70 @@ class _LandingPageState extends State<LandingPage> {
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
+
       title: 'Catbreeds',
       actions: [
         Platform.isIOS
             ? CupertinoButton(
                 padding: EdgeInsets.zero,
                 onPressed: _loadBreeds,
-                child: const Icon(CupertinoIcons.refresh),
+                child: const Icon(Icons.refresh),
               )
             : IconButton(
                 icon: const Icon(Icons.refresh),
                 onPressed: _loadBreeds,
               ),
       ],
-      body: _buildBody(),
-    );
-  }
-
-  Widget _buildBody() {
-    return Column(
-      children: [
-        
-        PlatformSearchField(
-          controller: _searchController,
-          hintText: Platform.isIOS
-              ? 'Search cat breeds...'
-              : 'Buscar razas de gatos...',
-          onClear: _clearSearch,
-          onChanged: (value) {
-          },
-        ),
-
-        // Resultados de búsqueda
-        if (_searchQuery.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: [
-                Text(
-                  '${filteredBreeds.length} resultado${filteredBreeds.length != 1 ? 's' : ''} para "$_searchQuery"',
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 14,
-                  ),
-                ),
-                const Spacer(),
-                if (_searchQuery.isNotEmpty)
-                  GestureDetector(
-                    onTap: _clearSearch,
-                    child: Text(
-                      'Limpiar',
+      body: GestureDetector(
+        behavior: HitTestBehavior.translucent, // detecta taps en espacios vacíos
+      onTap: () {
+        FocusScope.of(context).unfocus(); // cierra el teclado
+      },
+        child: Column(
+          children: [
+            PlatformSearchField(
+              controller: _searchController,
+              hintText: Platform.isIOS
+                  ? 'Search cat breeds...'
+                  : 'Buscar razas de gatos...',
+              onClear: _clearSearch,
+            ),
+            if (_searchQuery.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    Text(
+                      '${filteredBreeds.length} resultado${filteredBreeds.length != 1 ? 's' : ''} para "$_searchQuery"',
                       style: TextStyle(
-                        color: Platform.isIOS
-                            ? CupertinoColors.activeBlue
-                            : Theme.of(context).primaryColor,
+                        color: Colors.grey[600],
                         fontSize: 14,
                       ),
                     ),
-                  ),
-              ],
-            ),
-          ),
-
-        // Lista o estados
-        Expanded(
-          child: _buildListContent(),
+                    const Spacer(),
+                    if (_searchQuery.isNotEmpty)
+                      GestureDetector(
+                        onTap: _clearSearch,
+                        child: Text(
+                          'Limpiar',
+                          style: TextStyle(
+                            color: Theme.of(context).primaryColor,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            Expanded(child: _buildListContent()),
+          ],
         ),
-      ],
+      ),
     );
   }
 
   Widget _buildListContent() {
-    if (isLoading) {
-      return const Center(child: PlatformLoadingIndicator());
-    }
+    if (isLoading) return const Center(child: PlatformLoadingIndicator());
 
     if (error != null) {
       return Center(
@@ -206,26 +195,18 @@ class _LandingPageState extends State<LandingPage> {
             const SizedBox(height: 16),
             const Text('Error al cargar datos'),
             const SizedBox(height: 16),
-            PlatformButton(
-              text: 'Reintentar',
-              onPressed: _loadBreeds,
-            ),
+            PlatformButton(text: 'Reintentar', onPressed: _loadBreeds),
           ],
         ),
       );
     }
 
-    // Si no hay resultados de búsqueda
     if (filteredBreeds.isEmpty && _searchQuery.isNotEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Platform.isIOS ? CupertinoIcons.search : Icons.search_off,
-              size: 64,
-              color: Colors.grey[400],
-            ),
+            Icon(Icons.search_off, size: 64, color: Colors.grey[400]),
             const SizedBox(height: 16),
             Text(
               'No se encontraron razas',
@@ -238,194 +219,157 @@ class _LandingPageState extends State<LandingPage> {
             const SizedBox(height: 8),
             Text(
               'Intenta con otro término de búsqueda',
-              style: TextStyle(
-                color: Colors.grey[500],
-              ),
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey[500]),
             ),
             const SizedBox(height: 16),
-            PlatformButton(
-              text: 'Limpiar búsqueda',
-              onPressed: _clearSearch,
-              isPrimary: false,
-            ),
+            PlatformButton(text: 'Limpiar búsqueda', onPressed: _clearSearch, isPrimary: false),
           ],
         ),
       );
     }
 
-    // Lista con resultados
-    return RefreshIndicator(
-      onRefresh: _loadBreeds,
-      child: ListView.builder(
-        physics: Platform.isIOS
-            ? const BouncingScrollPhysics()
-            : const ClampingScrollPhysics(),
-        itemCount: filteredBreeds.length,
-        itemBuilder: (context, index) {
-          final breed = filteredBreeds[index];
-          return _buildBreedCard(breed, index, context);
-        },
-      ),
-    );
+    // Cross-platform pull-to-refresh
+    if (Platform.isIOS) {
+      return CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          CupertinoSliverRefreshControl(onRefresh: _loadBreeds),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) => _buildBreedCard(filteredBreeds[index], index, context),
+              childCount: filteredBreeds.length,
+            ),
+          ),
+        ],
+      );
+    } else {
+      return RefreshIndicator(
+        onRefresh: _loadBreeds,
+        child: ListView.builder(
+          physics: const ClampingScrollPhysics(),
+          itemCount: filteredBreeds.length,
+          itemBuilder: (context, index) => _buildBreedCard(filteredBreeds[index], index, context),
+        ),
+      );
+    }
   }
 
   Widget _buildBreedCard(CatBreed breed, int index, BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
+    final size = MediaQuery.of(context).size;
     return SizedBox(
       height: size.height * 0.3,
       child: Card(
-          margin: const EdgeInsets.all(32),
-          child: Stack(
-            children: [
-              // Centro
-              Align(
-                alignment: Alignment.center,
-                child: breed.imageUrl != null
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.network(
-                          breed.imageUrl!,
-                          width: double.infinity, //90,
-                          height: size.height * 0.6,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              Container(
-                            width: 90,
-                            height: 90,
-                            color: Colors.grey[300],
-                            child: Icon(
-                              Platform.isIOS
-                                  ? CupertinoIcons.photo
-                                  : Icons.image,
-                            ),
-                          ),
-                        ),
-                      )
-                    : Container(
-                        width: 90,
-                        height: 90,
-                        color: Colors.grey[300],
-                        child: Icon(
-                          Platform.isIOS ? CupertinoIcons.photo : Icons.image,
+        margin: const EdgeInsets.all(32),
+        child: Stack(
+          children: [
+            Align(
+              alignment: Alignment.center,
+              child: breed.imageUrl != null
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(
+                        breed.imageUrl!,
+                        width: double.infinity,
+                        height: size.height * 0.6,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          width: 90,
+                          height: 90,
+                          color: Colors.grey[300],
+                          child: const Icon(Icons.image),
                         ),
                       ),
+                    )
+                  : Container(
+                      width: 90,
+                      height: 90,
+                      color: Colors.grey[300],
+                      child: const Icon(Icons.image),
+                    ),
+            ),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.4),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    breed.intelligence.toString(),
+                    maxLines: 2,
+                    style: const TextStyle(fontSize: 10, color: Colors.white),
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.right,
+                  ),
+                ),
               ),
-              // Abajo derecha
-              Align(
-                alignment: Alignment.bottomRight,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+            ),
+            Align(
+              alignment: Alignment.topLeft,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.4),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    breed.name,
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.topRight,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      Platform.isIOS
+                          ? CupertinoPageRoute(builder: (_) => DetailPage(breed: breed))
+                          : MaterialPageRoute(builder: (_) => DetailPage(breed: breed)),
+                    );
+                  },
                   child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
                       color: Colors.black.withOpacity(0.4),
                       borderRadius: BorderRadius.circular(6),
                     ),
-                    child: Text(
-                      breed.intelligence.toString(),
-                      maxLines: 2,
-                      style: const TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.normal,
-                          color: Colors.white),
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.right,
-                    ),
+                    child:  Icon(Icons.chevron_right, color: AppColors.white),
                   ),
                 ),
               ),
-              // Arriba izquierda
-              Align(
-                alignment: Alignment.topLeft,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.4),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      breed.name,
-                      style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
-                      textAlign: TextAlign.left,
-                    ),
+            ),
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.4),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    breed.origin,
+                    maxLines: 2,
+                    style: const TextStyle(fontSize: 10, color: Colors.white),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ),
-
-              // Arriba derecha
-              Transform.translate(
-                offset: const Offset(0, 0),
-                child: Align(
-                  alignment: Alignment.topRight,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 0, vertical: 0),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.4),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            Platform.isIOS
-                                ? CupertinoPageRoute(
-                                    builder: (context) =>
-                                        DetailPage(breed: breed),
-                                  )
-                                : MaterialPageRoute(
-                                    builder: (context) =>
-                                        DetailPage(breed: breed),
-                                  ),
-                          );
-                        },
-                        child: Icon(
-                          Platform.isIOS
-                              ? CupertinoIcons.chevron_right
-                              : Icons.chevron_right,
-                          color: AppColors.white,
-                        ),
-                      ), 
-                    ),
-                  ),
-                ),
-              ),
-
-              // Abajo izquierda
-              Align(
-                alignment: Alignment.bottomLeft,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.4),
-                        borderRadius: BorderRadius.circular(6)),
-                    child: Text(
-                      breed.origin,
-                      maxLines: 2,
-                      style: const TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.normal,
-                          color: Colors.white),
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.left,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          )),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

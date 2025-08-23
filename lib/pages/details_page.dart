@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pragma_prueba/models/cat_breed.dart';
 import 'package:pragma_prueba/pages/widgets/platform_scaffold.dart';
+import 'package:pragma_prueba/theme/app_colors.dart';
 
 class DetailPage extends StatelessWidget {
   final CatBreed breed;
@@ -13,6 +14,18 @@ class DetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
+       leading: 
+        Platform.isIOS
+            ? CupertinoButton(
+                padding: EdgeInsets.zero,
+                onPressed: () => Navigator.of(context).pop()  ,
+                child: const Icon(Icons.arrow_back_ios),
+              )
+            : IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => Navigator.of(context).pop() ,
+              ),
+      
       title: breed.name,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -31,7 +44,7 @@ class DetailPage extends StatelessWidget {
                   height: 200,
                   color: Colors.grey[300],
                   child: Icon(
-                    Platform.isIOS ? CupertinoIcons.photo : Icons.image,
+                    Platform.isIOS ? Icons.image : Icons.image,
                     size: 64,
                   ),
                 ),
@@ -61,6 +74,7 @@ class DetailPage extends StatelessWidget {
                     Text(
                       breed.description,
                       textAlign: TextAlign.justify,
+                      style: TextStyle(color: AppColors.black),
                     ),
                     const SizedBox(height: 50),
                     Text(
@@ -74,6 +88,7 @@ class DetailPage extends StatelessWidget {
                     Text(
                       breed.origin,
                       textAlign: TextAlign.justify,
+                      style: TextStyle(color: AppColors.black),
                     ),
                     const SizedBox(height: 50),
                     Text(
@@ -87,6 +102,7 @@ class DetailPage extends StatelessWidget {
                     Text(
                       breed.temperament,
                       textAlign: TextAlign.center,
+                      style: TextStyle(color: AppColors.black),
                     ),
                     const SizedBox(height: 50),
                     Text(
@@ -99,6 +115,7 @@ class DetailPage extends StatelessWidget {
                     const SizedBox(height: 8),
                     Text(
                       breed.energyLevel.toString(),
+                      style: TextStyle(color: AppColors.black),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 50),
@@ -113,6 +130,7 @@ class DetailPage extends StatelessWidget {
                     Text(
                       breed.affectionLevel.toString(),
                       textAlign: TextAlign.center,
+                      style: TextStyle(color: AppColors.black),
                     ),
                     const SizedBox(height: 50),
                   ],
