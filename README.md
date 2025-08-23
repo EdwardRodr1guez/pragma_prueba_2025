@@ -34,11 +34,24 @@ La organización del proyecto es la siguiente:
 
 Aquí puedes ver algunas capturas de pantalla de la aplicación:
 
+
+## Android
 ### Pantalla de splash
 <img src="assets/screenshots/splash.jpg" alt="Pantalla de splash" width="300"/>
 
 ### Pantalla de landing
 <img src="assets/screenshots/landing.jpg" alt="Pantalla de landing" width="300"/>
 
-### Ejemplo de vista de detalle
+### Pantalla vista de detalle
 <img src="assets/screenshots/detail.jpg" alt="Pantalla de vista de detalle" width="300"/>
+
+
+## iOS
+### Pantalla de splash
+<img src="assets/screenshots/splash_ios.PNG" alt="Pantalla de splash" width="300"/>
+
+### Pantalla de landing
+<img src="assets/screenshots/landing_ios.png" alt="Pantalla de landing" width="300"/>
+
+### Ejemplo de vista de detalle
+<img src="assets/screenshots/detail_ios.png" alt="Pantalla de vista de detalle" width="300"/>
