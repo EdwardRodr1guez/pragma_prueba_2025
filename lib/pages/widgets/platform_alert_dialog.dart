@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pragma_prueba/theme/app_colors.dart';
 
 class PlatformAlertDialog {
   static Future<void> show({
@@ -28,6 +29,7 @@ class PlatformAlertDialog {
       return showDialog(
         context: context,
         builder: (context) => AlertDialog(
+          backgroundColor: AppColors.white,
           title: Text(title),
           content: Text(message),
           actions: [

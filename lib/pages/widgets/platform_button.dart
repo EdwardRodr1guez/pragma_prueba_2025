@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pragma_prueba/theme/app_colors.dart';
 
 // Componente nativo adaptativo
 class PlatformButton extends StatelessWidget {
@@ -37,7 +38,10 @@ class PlatformButton extends StatelessWidget {
                   isPrimary ? Theme.of(context).primaryColor : null,
             ),
             onPressed: onPressed,
-            child: Text(text),
+            child: Text(
+              text,
+              style: TextStyle(color: AppColors.white),
+            ),
           );
   }
 }
