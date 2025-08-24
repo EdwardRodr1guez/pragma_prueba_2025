@@ -34,8 +34,7 @@ class PlatformButton extends StatelessWidget {
           )
         : ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor:
-                  isPrimary ? Theme.of(context).primaryColor : null,
+              backgroundColor: Theme.of(context).primaryColor,
             ),
             onPressed: onPressed,
             child: Text(
