@@ -1,4 +1,3 @@
-
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -7,14 +6,13 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:pragma_prueba/models/cat_breed.dart';
-import 'package:pragma_prueba/pages/details_page.dart';
+import 'package:pragma_prueba/pages/widgets/breed_card.dart';
 import 'package:pragma_prueba/pages/widgets/platform_alert_dialog.dart';
 import 'package:pragma_prueba/pages/widgets/platform_button.dart';
 import 'package:pragma_prueba/pages/widgets/platform_loading_indicator.dart';
 import 'package:pragma_prueba/pages/widgets/platform_scaffold.dart';
 import 'package:pragma_prueba/pages/widgets/platform_search_field.dart';
 import 'package:pragma_prueba/services/cat_api_service.dart';
-import 'package:pragma_prueba/theme/app_colors.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
@@ -115,7 +113,6 @@ class _LandingPageState extends State<LandingPage> {
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
-
       title: 'Catbreeds',
       actions: [
         Platform.isIOS
@@ -130,10 +127,11 @@ class _LandingPageState extends State<LandingPage> {
               ),
       ],
       body: GestureDetector(
-        behavior: HitTestBehavior.translucent, // detecta taps en espacios vacíos
-      onTap: () {
-        FocusScope.of(context).unfocus(); // cierra el teclado
-      },
+        behavior:
+            HitTestBehavior.translucent, // detecta taps en espacios vacíos
+        onTap: () {
+          FocusScope.of(context).unfocus(); // cierra el teclado
+        },
         child: Column(
           children: [
             PlatformSearchField(
@@ -223,7 +221,10 @@ class _LandingPageState extends State<LandingPage> {
               style: TextStyle(color: Colors.grey[500]),
             ),
             const SizedBox(height: 16),
-            PlatformButton(text: 'Limpiar búsqueda', onPressed: _clearSearch, isPrimary: false),
+            PlatformButton(
+                text: 'Limpiar búsqueda',
+                onPressed: _clearSearch,
+                isPrimary: false),
           ],
         ),
       );
@@ -237,7 +238,7 @@ class _LandingPageState extends State<LandingPage> {
           CupertinoSliverRefreshControl(onRefresh: _loadBreeds),
           SliverList(
             delegate: SliverChildBuilderDelegate(
-              (context, index) => _buildBreedCard(filteredBreeds[index], index, context),
+              (context, index) => BreedCard(breed: filteredBreeds[index]),
               childCount: filteredBreeds.length,
             ),
           ),
@@ -249,127 +250,10 @@ class _LandingPageState extends State<LandingPage> {
         child: ListView.builder(
           physics: const ClampingScrollPhysics(),
           itemCount: filteredBreeds.length,
-          itemBuilder: (context, index) => _buildBreedCard(filteredBreeds[index], index, context),
+          itemBuilder: (context, index) =>
+              BreedCard(breed: filteredBreeds[index]),
         ),
       );
     }
-  }
-
-  Widget _buildBreedCard(CatBreed breed, int index, BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    return SizedBox(
-      height: size.height * 0.3,
-      child: Card(
-        margin: const EdgeInsets.all(32),
-        child: Stack(
-          children: [
-            Align(
-              alignment: Alignment.center,
-              child: breed.imageUrl != null
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        breed.imageUrl!,
-                        width: double.infinity,
-                        height: size.height * 0.6,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          width: 90,
-                          height: 90,
-                          color: Colors.grey[300],
-                          child: const Icon(Icons.image),
-                        ),
-                      ),
-                    )
-                  : Container(
-                      width: 90,
-                      height: 90,
-                      color: Colors.grey[300],
-                      child: const Icon(Icons.image),
-                    ),
-            ),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.4),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    breed.intelligence.toString(),
-                    maxLines: 2,
-                    style: const TextStyle(fontSize: 10, color: Colors.white),
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.right,
-                  ),
-                ),
-              ),
-            ),
-            Align(
-              alignment: Alignment.topLeft,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.4),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    breed.name,
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-                  ),
-                ),
-              ),
-            ),
-            Align(
-              alignment: Alignment.topRight,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      Platform.isIOS
-                          ? CupertinoPageRoute(builder: (_) => DetailPage(breed: breed))
-                          : MaterialPageRoute(builder: (_) => DetailPage(breed: breed)),
-                    );
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.4),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child:  Icon(Icons.chevron_right, color: AppColors.white),
-                  ),
-                ),
-              ),
-            ),
-            Align(
-              alignment: Alignment.bottomLeft,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.4),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    breed.origin,
-                    maxLines: 2,
-                    style: const TextStyle(fontSize: 10, color: Colors.white),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }
