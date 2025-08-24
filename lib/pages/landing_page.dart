@@ -184,9 +184,7 @@ class _LandingPageState extends State<LandingPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Platform.isIOS
-                  ? CupertinoIcons.exclamationmark_triangle
-                  : Icons.error,
+              Icons.error,
               size: 64,
               color: Colors.red,
             ),
